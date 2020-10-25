@@ -18,11 +18,12 @@ bodyParser = require('body-parser')
 #endregion
 
 ############################################################
-#region internalProperties
-cfg = null
-data = null
+import handlers from "./scihandlers"
+import routes from "./sciroutes"
 
 ############################################################
+#region internalProperties
+cfg = null
 app = null
 #endregion
 
@@ -30,70 +31,22 @@ app = null
 scimodule.initialize = () ->
     log "scimodule.initialize"
     cfg = allModules.configmodule
-    data = allModules.datahandlermodule
 
     app = express()
     app.use bodyParser.urlencoded(extended: false)
     app.use bodyParser.json()
+
+    handlers.initialize()
     return
 
 ############################################################
 #region internalFunctions
 attachSCIFunctions = ->
     log "attachSCIFunctions"
-
-    app.post "/getLatestOrders", onGetLatestOrders 
-    app.post "/getLatestTicker", onGetLatestTicker
-    app.post "/getLatestBalance", onGetLatestBalance
-
+    for route,handler of routes
+        log route
+        app.post "/"+route, handler
     return
-
-############################################################
-#region communicationHandlers
-onGetLatestOrders = (req, res) ->
-    log "onGetLatestOrders"
-    response = {}
-    try
-        for pair in req.body.assetPairs
-            sellStack = data.getSellStack(pair)
-            buyStack = data.getBuyStack(pair)
-            cancelledStack = data.getCancelledStack(pair)
-            filledStack = data.getFilledStack(pair)
-            if sellStack? and buyStack? and cancelledStack? and filledStack? then response[pair] = {sellStack, buyStack, cancelledStack, filledStack}
-        res.send(response)
-    catch err
-        log "Error in onGetLatestOrders!"
-        log err
-        res.send(err)
-    return
-
-onGetLatestTicker = (req, res) ->
-    log "onGetLatestTicker"
-    response = {}
-    try
-        for pair in req.body.assetPairs
-            response[pair] = data.getTicker(pair)
-        res.send(response)
-    catch err
-        log "Error in onGetLatestOrders!"
-        log err
-        res.send(err)
-    return
-
-onGetLatestBalance = (req, res) ->
-    log "onGetLatestBalance"
-    response = {}
-    try
-        for asset in req.body.assets
-            response[asset] = data.getAssetBalance(asset)
-        res.send(response)
-    catch err
-        log "Error in onGetLatestBalance!"
-        log err
-        res.send(err)
-    return
-
-#endregion
 
 #################################################################
 listenForRequests = ->
