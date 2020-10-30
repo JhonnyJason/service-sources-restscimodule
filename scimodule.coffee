@@ -37,6 +37,7 @@ scimodule.initialize = () ->
     app.use bodyParser.json()
 
     handlers.initialize()
+    if handlers.authenticate? then app.use handlers.authenticate
     return
 
 ############################################################
