@@ -1,4 +1,3 @@
-scimodule = {name: "scimodule"}
 ############################################################
 #region printLogFunctions
 log = (arg) ->
@@ -11,16 +10,14 @@ print = (arg) -> console.log(arg)
 
 ############################################################
 #region modules from the Environment
-sciBase = require("thingy-sci-base")
+import * as sciBase from "thingy-sci-base"
 import routes from "./sciroutes"
 import handlers from "./scihandlers"
 
 #endregion
 
 ############################################################
-scimodule.prepareAndExpose = ->
+export prepareAndExpose = ->
     log "scimodule.prepareAndExpose"
     sciBase.prepareAndExpose(handlers.authenticate, routes)
     return
-    
-export default scimodule
