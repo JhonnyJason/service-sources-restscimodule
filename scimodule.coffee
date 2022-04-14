@@ -11,13 +11,14 @@ print = (arg) -> console.log(arg)
 ############################################################
 #region modules from the Environment
 import * as sciBase from "thingy-sci-base"
-import routes from "./sciroutes"
-import handlers from "./scihandlers"
+import { routes, handlers } from "./specificinterface"
+import * as service from "./service"
 
 #endregion
 
 ############################################################
 export prepareAndExpose = ->
     log "scimodule.prepareAndExpose"
-    sciBase.prepareAndExpose(handlers.authenticate, routes)
+    handlers.setService(service)
+    sciBase.prepareAndExpose(service.authenticate, routes)
     return
